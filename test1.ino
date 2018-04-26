@@ -38,7 +38,7 @@ int currentState;
 TM1638 module(8,9,7);
 SimpleTimer timer;
 int number =100;
-int timeInterval = 1000;
+int timeInterval = 100;
 int timerId;
 
 //button variables
@@ -55,6 +55,7 @@ int blinkTimer;
 
 //boooooom params
 long timeToExplosion;
+long codeToTimeExplosion;
 
 
 
@@ -180,27 +181,33 @@ void countdown(){
       break;
     case RIGHT:
       timer.deleteTimer(timerId);
-      timeInterval -= 100;
-      timerId = timer.setInterval(timeInterval, maxSpeed); //gdy podczas schodzenia w dół z timeInterval damy raz w górę, to coś się rypie
-      timerId = timer.setInterval(timeInterval, decreaseTimer);
+      //maxSpeed1();
+      timerId = timer.setInterval(timeInterval,maxSpeed1);
       
     break;
     case LEFT:
       timer.deleteTimer(timerId);
-      timeInterval += 100;
-      timerId = timer.setInterval(timeInterval, maxSpeed);
       timerId = timer.setInterval(timeInterval, decreaseTimer);
     break;
       
   }
-  if(timeToExplosion==0){// do usuniecia
+  
+  if(timeToExplosion==0){
     timer.disable(timerId);
     currentState=BOOM;
   }
   
 }
 
-void maxSpeed(){ //gdy schodzi do 0 lub <0 to error
+void maxSpeed1(){
+  long MaxSpeed = timeToExplosion/600*COUNT;
+  long fastStep = MaxSpeed/10;
+  long timeToMinus = MaxSpeed - fastStep;
+  long one = 1;
+  timeToExplosion -= one + timeToMinus;
+}
+
+/*void maxSpeed2(){ //gdy schodzi do 0 lub <0 to error
   if(timeToExplosion==0){ //nie wiem gdzie dać przejscie do trybu boom 
     currentState=BOOM;
   }
@@ -214,15 +221,15 @@ void maxSpeed(){ //gdy schodzi do 0 lub <0 to error
     timeToExplosion--;
   }
   
-}
+}*/
 void boom(){
-  Serial.print("BOOM");
+  Serial.print("BOOOOOM");
   Serial.print("\n");
 }
 
 void decreaseTimer(){
   if (timeToExplosion > 0){
-    timeToExplosion--;
+    timeToExplosion-= 1;
   }
 }
 void configureEncoder(){
